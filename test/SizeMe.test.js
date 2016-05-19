@@ -257,5 +257,40 @@ describeWithDOM(`Given the SizeMe library`, () => {
         expect(mounted.text()).to.equal(`100 x 100 & bar`);
       });
     });
+
+    describe(`And rerender has been set to true`, () => {
+      it(`Then the component should not render the placeholder`, () => {
+        const SizeAwareComponent = SizeMe({ monitorWidth: true, rerender: true })(
+          ({ size: { width, height } }) => <div>{width} x {height || `null`}</div>
+        );
+
+        const mounted = mount(<SizeAwareComponent />);
+
+        // Initial render should not be the placeholder.
+        expect(mounted.html()).to.not.equal(placeholderHtml);
+
+        // Initial render should be as expected.
+        expect(mounted.text()).to.equal(`NaN x null`);
+      });
+
+      describe(`And the size event has occurred`, () => {
+        it(`Then expected sizes should be provided to the rendered component`, () => {
+          const SizeAwareComponent = SizeMe({ monitorWidth: true, rerender: true })(
+            ({ size: { width, height } }) => <div>{width} x {height || `null`}</div>
+          );
+
+          const mounted = mount(<SizeAwareComponent />);
+
+          // Get the callback for size changes.
+          const checkIfSizeChangedCallback = resizeDetectorMock.listenTo.args[0][1];
+          checkIfSizeChangedCallback({
+            getBoundingClientRect: () => ({ width: 100, height: 150 })
+          });
+
+          // Update should have occurred immediately.
+          expect(mounted.text()).to.equal(`100 x null`);
+        });
+      });
+    });
   });
 }, html);

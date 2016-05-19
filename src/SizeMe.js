@@ -109,7 +109,7 @@ const RenderWrapper = (WrappedComponent) => {
  * @return The wrapped component.
  */
 function SizeMe(config = defaultConfig) {
-  const { monitorWidth = true, monitorHeight = false, refreshRate = 16 } = config;
+  const { monitorWidth = true, monitorHeight = false, refreshRate = 16, rerender = false } = config;
 
   invariant(
     monitorWidth || monitorHeight,
@@ -129,8 +129,8 @@ function SizeMe(config = defaultConfig) {
       static displayName = `SizeMe(${getDisplayName(WrappedComponent)})`;
 
       state = {
-        width: undefined,
-        height: undefined
+        width: rerender ? NaN : undefined,
+        height: rerender ? NaN : undefined
       };
 
       componentDidMount() {
