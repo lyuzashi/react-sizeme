@@ -4,7 +4,7 @@ import React, { Children, Component, PropTypes } from 'react';
 import ReactDOM from 'react-dom';
 import invariant from 'invariant';
 import { throttle } from 'lodash';
-import resizeDetector from './resizeDetector';
+import resizeDetector, { usePlaceholder } from './resizeDetector';
 
 const defaultConfig = {
   monitorWidth: true,
@@ -65,7 +65,7 @@ Placeholder.propTypes = {
  */
 const RenderWrapper = (WrappedComponent) => {
   function SizeMeRenderer({ explicitRef, className, style, size, ...restProps }) {
-    const { width, height } = size;
+    const { width, height } = usePlaceholder ? size : { width: null, height: null };
 
     const toRender = (width === undefined && height === undefined)
       ? <Placeholder className={className} style={style} />
@@ -109,7 +109,7 @@ const RenderWrapper = (WrappedComponent) => {
  * @return The wrapped component.
  */
 function SizeMe(config = defaultConfig) {
-  const { monitorWidth = true, monitorHeight = false, refreshRate = 16, rerender = false } = config;
+  const { monitorWidth = true, monitorHeight = false, refreshRate = 16 } = config;
 
   invariant(
     monitorWidth || monitorHeight,
@@ -129,8 +129,8 @@ function SizeMe(config = defaultConfig) {
       static displayName = `SizeMe(${getDisplayName(WrappedComponent)})`;
 
       state = {
-        width: rerender ? NaN : undefined,
-        height: rerender ? NaN : undefined
+        width: undefined,
+        height: undefined
       };
 
       componentDidMount() {

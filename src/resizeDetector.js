@@ -1,7 +1,9 @@
 import createResizeDetector from 'element-resize-detector';
 
-const resizeDetector = (`undefined` !== typeof window) ? createResizeDetector({
+const usePlaceholder = (`undefined` !== typeof window);
+
+const resizeDetector = usePlaceholder ? createResizeDetector({
   strategy: `scroll`
 }) : {};
 
-export default resizeDetector;
+export { resizeDetector as default, usePlaceholder };
